@@ -69,7 +69,7 @@ export default defineConfig(() => {
     // Deploy je pod https://fedora.tail29f409.ts.net/terra-ignis/ (tailscale serve
     // mount → http://127.0.0.1:8899, root deploy/terra-ignis). Bez base generuje
     // build absolutní /assets/... cesty, které browser hledá na domain rootu → 404.
-    base: '/terra-ignis/',
+    base: '/terra-ignis-v2/',
     plugins: [react(), tailwindcss(), aistudioMediaPlugin()],
     resolve: {
       alias: {
