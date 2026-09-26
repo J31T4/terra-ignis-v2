@@ -1,0 +1,6 @@
+{
+  "name": "Terra Ignis",
+  "description": "Ohňová, kejklířská a fakírská show z Mohelnice. Jedinečné spojení ohně, šermu, divadla a fantazie pro svatby, slavnosti a firemní akce.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
