@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { LogoImg } from '../components/LogoImg';
@@ -18,156 +18,102 @@ const DAY_ITEMS = [
 const NIGHT_ITEMS = [
   { icon: Flame, title: 'Klasická tavern show', text: 'Energické vystoupení inspirované historickou atmosférou. 10–15 min, 5–6 performerů.' },
   { icon: Music, title: 'Filmové melodie', text: 'Hromadné choreografie ve stylu známých filmů. 15 min, 5–6 performerů.' },
-  { icon: Heart, title: 'Za soumraku', text: 'Romantické divadelní vystoupení s příběhem. 15 min, 6 performerů.' },
+  { icon: Heart, title: 'Za soumraku', text: 'Romantické divadelné vystoupení s příběhem. 15 min, 6 performerů.' },
 ];
 
-/* --- HVĚZDY: deterministické pozice (žádný random při renderu) --- */
-const STARS = Array.from({ length: 60 }, (_, i) => ({
+/* --- HVĚZDY: deterministické pozice --- */
+const STARS = Array.from({ length: 70 }, (_, i) => ({
   left: `${(i * 17 + 7) % 100}%`,
-  top: `${(i * 23 + 3) % 85}%`,
+  top: `${(i * 23 + 3) % 88}%`,
   size: 1 + (i % 3),
-  opacity: 0.3 + (i % 5) * 0.14,
+  opacity: 0.35 + (i % 5) * 0.13,
   dur: 2 + (i % 4) * 1.2,
   delay: (i % 7) * 0.6,
 }));
 
-/* --- OBLAČNÉ STÍNY pro den --- */
+/* --- OBLAČNÉ STÍHY pro den --- */
 const CLOUDS = [
-  { left: '5%', top: '8%', w: 180, h: 60, opacity: 0.25 },
-  { left: '55%', top: '15%', w: 220, h: 50, opacity: 0.18 },
-  { left: '30%', top: '28%', w: 150, h: 45, opacity: 0.12 },
+  { left: '6%', top: '10%', w: 190, h: 55, opacity: 0.4 },
+  { left: '58%', top: '16%', w: 230, h: 50, opacity: 0.3 },
+  { left: '32%', top: '30%', w: 160, h: 44, opacity: 0.22 },
 ];
 
 export const HomePage: React.FC = () => {
   const [hovered, setHovered] = useState<'day' | 'night' | null>(null);
 
-  // Šířky přes CSS transition (plynulejší než framer-motion flex)
-  const dayWidth = hovered === 'day' ? 82 : hovered === 'night' ? 18 : 50;
-  const nightWidth = hovered === 'night' ? 82 : hovered === 'day' ? 18 : 50;
+  /* Odkrývání: obě vrstvy jsou přes celou obrazovku, clip-path odhaluje.
+     Pozadí se NEROZTAHUJE — jen se odkrývá/ukrývá. */
+  const dayReveal = hovered === 'night' ? 0 : hovered === 'day' ? 100 : 50;
 
   return (
     <>
-      {/* HLAVNÍ DEN/NOC SPLIT */}
-      <section className="relative flex flex-col md:flex-row overflow-hidden" style={{ minHeight: 'calc(100vh - 72px)' }}>
+      <section className="relative overflow-hidden" style={{ minHeight: 'calc(100vh - 72px)' }}>
 
-        {/* ===== DEN ===== */}
+        {/* ===== VRSTVA 1: DEN (clip-path odhaluje) ===== */}
         <div
-          className="relative overflow-hidden cursor-pointer border-b-2 md:border-b-0 md:border-r-2 border-[#1A1512]"
+          className="absolute inset-0"
           style={{
-            width: `${dayWidth}%`,
-            transition: 'width 0.55s cubic-bezier(0.22, 0.61, 0.36, 1)',
-            background: 'linear-gradient(175deg, #FDF8EE 0%, #F8EFD4 35%, #EDD9A0 70%, #E0C480 100%)',
+            clipPath: `polygon(0% 0%, ${dayReveal}% 0%, ${dayReveal}% 100%, 0% 100%)`,
+            transition: 'clip-path 0.6s cubic-bezier(0.65, 0, 0.35, 1)',
+            background: 'linear-gradient(170deg, #EAF4FF 0%, #DCEBFA 25%, #FDF0D5 60%, #FBDFA8 85%, #F7CE8C 100%)',
           }}
-          onMouseEnter={() => setHovered('day')}
-          onMouseLeave={() => setHovered(null)}
         >
-          {/* Sluneční záře — velký měkký glow */}
+          {/* Sluneční záře */}
           <div
             className="absolute"
             style={{
-              top: '-15%', right: '-10%',
-              width: '65%', height: '65%',
-              background: 'radial-gradient(circle, rgba(255,210,80,0.55) 0%, rgba(255,180,50,0.2) 45%, transparent 70%)',
+              top: '-12%', right: '-8%',
+              width: '62%', height: '62%',
+              background: 'radial-gradient(circle, rgba(255,214,102,0.7) 0%, rgba(255,186,66,0.25) 45%, transparent 70%)',
             }}
           />
-
-          {/* Paprsky slunce */}
+          {/* Paprsky */}
           <div
-            className="absolute top-0 right-0 w-[80%] h-[80%] opacity-[0.08]"
+            className="absolute opacity-[0.07]"
             style={{
-              background: 'conic-gradient(from 200deg at 85% 15%, transparent 0deg, #C8102E 15deg, transparent 30deg, #C8102E 50deg, transparent 65deg, #C8102E 85deg, transparent 100deg, #C8102E 120deg, transparent 135deg, #C8102E 155deg, transparent 180deg, #C8102E 200deg, transparent 220deg)',
+              top: '-20%', right: '-20%', width: '110%', height: '110%',
+              background: 'conic-gradient(from 200deg at 82% 12%, transparent 0deg, #E8A020 12deg, transparent 26deg, #E8A020 44deg, transparent 58deg, #E8A020 76deg, transparent 90deg, #E8A020 108deg, transparent 122deg, #E8A020 140deg, transparent 154deg, #E8A020 172deg, transparent 186deg, #E8A020 204deg, transparent 220deg)',
             }}
           />
-
           {/* Obláčky */}
           {CLOUDS.map((c, i) => (
             <div
               key={`cloud-${i}`}
-              className="absolute rounded-full"
               style={{
+                position: 'absolute',
                 left: c.left, top: c.top,
                 width: c.w, height: c.h,
+                borderRadius: '50%',
                 background: `radial-gradient(ellipse, rgba(255,255,255,${c.opacity}) 0%, transparent 70%)`,
-                filter: 'blur(12px)',
+                filter: 'blur(14px)',
               }}
             />
           ))}
-
-          {/* Jemná textura */}
-          <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #1A1512 0, #1A1512 1px, transparent 1px, transparent 16px)' }} />
-
-          {/* Slunce — velké, zářící */}
-          <motion.div
-            className="absolute"
+          {/* Zářivé slunce */}
+          <div
             style={{
-              top: '6%', right: '8%',
-              width: 120, height: 120,
-              background: 'radial-gradient(circle, #FFE066 0%, #FFB830 50%, transparent 72%)',
+              position: 'absolute',
+              top: '7%', right: '9%',
+              width: 110, height: 110,
+              background: 'radial-gradient(circle, #FFF3C4 0%, #FFD24D 48%, transparent 72%)',
               borderRadius: '50%',
-              boxShadow: '0 0 60px 20px rgba(255,190,50,0.35)',
+              boxShadow: '0 0 70px 26px rgba(255,200,70,0.4)',
             }}
-            animate={{ scale: hovered === 'day' ? 1.25 : 1, opacity: hovered === 'day' ? 1 : 0.85 }}
-            transition={{ duration: 0.6 }}
           />
-
-          {/* Obsah dne */}
-          <div className="relative z-10 flex flex-col justify-end h-full p-6 sm:p-10">
-            <div className="flex items-center gap-3 mb-4">
-              <Sun className="w-7 h-7 text-[#C8102E]" />
-              <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#C8102E]">Den</span>
-            </div>
-
-            <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl text-[#1A1512] leading-[1.05] mb-4">
-              Žonglování<br />bez ohně
-            </h2>
-
-            <p className="text-sm sm:text-base text-[#3A312A] font-serif-body leading-relaxed mb-6 max-w-md">
-              Energické denní vystoupení plné žonglování, kejklířských kousků a interakce s diváky.
-            </p>
-
-            <AnimatePresence>
-              {hovered === 'day' && (
-                <motion.div
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  transition={{ duration: 0.3, delay: 0.12 }}
-                  className="space-y-3 mb-6 max-w-lg"
-                >
-                  {DAY_ITEMS.map((item) => (
-                    <div key={item.title} className="flex items-start gap-3 bg-white/70 backdrop-blur-sm border border-[#1A1512]/15 p-3 rounded-sm">
-                      <item.icon className="w-5 h-5 text-[#C8102E] mt-0.5 shrink-0" />
-                      <div>
-                        <h3 className="font-display font-bold text-sm uppercase tracking-wide text-[#1A1512]">{item.title}</h3>
-                        <p className="text-xs text-[#3A312A] font-serif-body leading-relaxed">{item.text}</p>
-                      </div>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <Link
-              to="/vystoupeni"
-              className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[#1A1512] border-b-2 border-[#C8102E] pb-1 hover:gap-3 transition-all w-fit"
-            >
-              Denní vystoupení <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
+          {/* Jemná textura */}
+          <div className="absolute inset-0 opacity-[0.035]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #1A1512 0, #1A1512 1px, transparent 1px, transparent 18px)' }} />
         </div>
 
-        {/* ===== NOC ===== */}
+        {/* ===== VRSTVA 2: NOC (nad dnem, clip-path odhaluje) ===== */}
         <div
-          className="relative overflow-hidden cursor-pointer"
+          className="absolute inset-0"
           style={{
-            width: `${nightWidth}%`,
-            transition: 'width 0.55s cubic-bezier(0.22, 0.61, 0.36, 1)',
-            background: 'linear-gradient(175deg, #0B0614 0%, #120A20 35%, #1A0E18 70%, #0D0504 100%)',
+            clipPath: `polygon(${dayReveal}% 0%, 100% 0%, 100% 100%, ${dayReveal}% 100%)`,
+            transition: 'clip-path 0.6s cubic-bezier(0.65, 0, 0.35, 1)',
+            background: 'linear-gradient(170deg, #060A1E 0%, #0B1030 30%, #141238 65%, #1A0E2A 100%)',
           }}
-          onMouseEnter={() => setHovered('night')}
-          onMouseLeave={() => setHovered(null)}
         >
-          {/* HVĚZDY */}
+          {/* Hvězdy */}
           {STARS.map((s, i) => (
             <div
               key={`star-${i}`}
@@ -175,88 +121,164 @@ export const HomePage: React.FC = () => {
               style={{
                 left: s.left, top: s.top,
                 width: s.size, height: s.size,
-                background: '#fff',
+                background: '#FFFFFF',
                 opacity: s.opacity,
                 animation: `twinkle ${s.dur}s ease-in-out ${s.delay}s infinite alternate`,
               }}
             />
           ))}
-
-          {/* Mlhovina / galaxie — jemný fialovo-modrý opar */}
+          {/* Mlhovina */}
           <div
-            className="absolute"
             style={{
-              top: '10%', left: '20%',
-              width: '60%', height: '45%',
-              background: 'radial-gradient(ellipse, rgba(80,50,120,0.25) 0%, rgba(40,30,80,0.1) 50%, transparent 75%)',
-              filter: 'blur(30px)',
+              position: 'absolute',
+              top: '8%', left: '15%',
+              width: '70%', height: '50%',
+              background: 'radial-gradient(ellipse, rgba(90,110,190,0.22) 0%, rgba(60,50,120,0.08) 50%, transparent 75%)',
+              filter: 'blur(40px)',
             }}
           />
-
-          {/* Měsíc — zářící s halo */}
+          {/* Měsíc */}
           <div
-            className="absolute"
             style={{
-              top: '8%', left: '12%',
-              width: 90, height: 90,
-              background: 'radial-gradient(circle at 38% 38%, #F5F0DC 0%, #E8DFC0 45%, #C8BEA0 100%)',
+              position: 'absolute',
+              top: '9%', left: '10%',
+              width: 84, height: 84,
+              background: 'radial-gradient(circle at 38% 36%, #FFFDF2 0%, #F0E9CE 48%, #C9C0A2 100%)',
               borderRadius: '50%',
-              boxShadow: '0 0 50px 18px rgba(220,210,180,0.2), 0 0 120px 40px rgba(180,170,140,0.08)',
+              boxShadow: '0 0 60px 20px rgba(230,225,200,0.22), 0 0 140px 50px rgba(180,180,220,0.1)',
             }}
           />
-          {/* Krátery měsíce */}
-          <div className="absolute" style={{ top: '11%', left: '15%', width: 18, height: 14, background: 'rgba(180,170,140,0.35)', borderRadius: '50%' }} />
-          <div className="absolute" style={{ top: '14%', left: '20%', width: 10, height: 10, background: 'rgba(180,170,140,0.25)', borderRadius: '50%' }} />
+          <div className="absolute" style={{ top: '12%', left: '13%', width: 16, height: 13, background: 'rgba(185,178,150,0.35)', borderRadius: '50%' }} />
+          <div className="absolute" style={{ top: '15.5%', left: '18%', width: 9, height: 9, background: 'rgba(185,178,150,0.25)', borderRadius: '50%' }} />
+          {/* Noční opar */}
+          <div className="absolute bottom-0 left-0 right-0 h-1/3" style={{ background: 'linear-gradient(to top, rgba(10,6,22,0.65), transparent)' }} />
+        </div>
 
-          {/* Noční opar dole */}
-          <div className="absolute bottom-0 left-0 right-0 h-1/3" style={{ background: 'linear-gradient(to top, rgba(26,10,12,0.6), transparent)' }} />
+        {/* ===== HOVER ZÓNA: jedna vrstva, strana se určí z clientX.
+             (Dva oddělené onMouseEnter/Leave se rvaly — mouseleave
+             jedné zóny přepisoval mouseenter druhé → návrat na 50/50.) ===== */}
+        <div
+          className="absolute inset-0 z-10 cursor-pointer"
+          onMouseMove={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            setHovered((e.clientX - rect.left) < rect.width / 2 ? 'day' : 'night');
+          }}
+          onMouseLeave={() => setHovered(null)}
+        />
 
-          {/* Spodní záře ohně */}
-          <div className="absolute bottom-0 left-0 right-0 h-1" style={{ background: 'linear-gradient(to top, rgba(200,16,46,0.5), transparent)' }} />
+        {/* ===== OBSAH: rozdělený text overlay (pointer-events: none, ať
+             hover zóny v z-10 dostávají myš) ===== */}
+        <div
+          className="relative z-20 flex flex-col md:flex-row"
+          style={{ minHeight: 'calc(100vh - 72px)', pointerEvents: 'none' }}
+        >
 
-          {/* Obsah noci */}
-          <div className="relative z-10 flex flex-col justify-end h-full p-6 sm:p-10">
-            <div className="flex items-center gap-3 mb-4">
-              <Moon className="w-7 h-7 text-[#E8A020]" />
-              <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#E8A020]">Noc</span>
-            </div>
+          {/* DEN text */}
+          <div
+            className="flex flex-col justify-end p-6 sm:p-10"
+            style={{
+              width: `${dayReveal}%`,
+              transition: 'width 0.6s cubic-bezier(0.65, 0, 0.35, 1)',
+              opacity: dayReveal < 12 ? 0 : 1,
+            }}
+          >
+            <div className="max-w-md">
+              <div className="flex items-center gap-3 mb-4">
+                <Sun className="w-7 h-7 text-[#D4760A]" />
+                <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#D4760A]">Den</span>
+              </div>
 
-            <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl text-white leading-[1.05] mb-4">
-              Ohnivá show<br />plná ohně
-            </h2>
+              <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl text-[#1A1512] leading-[1.05] mb-4">
+                Žonglování<br />bez ohně
+              </h2>
 
-            <p className="text-sm sm:text-base text-[#B9AA94] font-serif-body leading-relaxed mb-6 max-w-md">
-              Choreografická ohnivá show s poi, holemi, vějíři a fakírskými čísly.
-            </p>
+              <p className="text-sm sm:text-base text-[#3A312A] font-serif-body leading-relaxed mb-6">
+                Energické denní vystoupení plné žonglování, kejklířských kousků a interakce s diváky.
+              </p>
 
-            <AnimatePresence>
-              {hovered === 'night' && (
-                <motion.div
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  transition={{ duration: 0.3, delay: 0.12 }}
-                  className="space-y-3 mb-6 max-w-lg"
-                >
-                  {NIGHT_ITEMS.map((item) => (
-                    <div key={item.title} className="flex items-start gap-3 bg-white/5 backdrop-blur-sm border border-white/10 p-3 rounded-sm">
-                      <item.icon className="w-5 h-5 text-[#E8A020] mt-0.5 shrink-0" />
-                      <div>
-                        <h3 className="font-display font-bold text-sm uppercase tracking-wide text-white">{item.title}</h3>
-                        <p className="text-xs text-[#B9AA94] font-serif-body leading-relaxed">{item.text}</p>
+              <AnimatePresence>
+                {hovered === 'day' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    transition={{ duration: 0.3, delay: 0.15 }}
+                    className="space-y-3 mb-6"
+                  >
+                    {DAY_ITEMS.map((item) => (
+                      <div key={item.title} className="flex items-start gap-3 bg-white/75 backdrop-blur-sm border border-[#1A1512]/15 p-3 rounded-sm">
+                        <item.icon className="w-5 h-5 text-[#D4760A] mt-0.5 shrink-0" />
+                        <div>
+                          <h3 className="font-display font-bold text-sm uppercase tracking-wide text-[#1A1512]">{item.title}</h3>
+                          <p className="text-xs text-[#3A312A] font-serif-body leading-relaxed">{item.text}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-            <Link
-              to="/vystoupeni"
-              className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-white border-b-2 border-[#E8A020] pb-1 hover:gap-3 transition-all w-fit"
-            >
-              Noční vystoupení <ArrowRight className="w-4 h-4" />
-            </Link>
+              <Link
+                to="/vystoupeni"
+                className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[#1A1512] border-b-2 border-[#D4760A] pb-1 hover:gap-3 transition-all w-fit pointer-events-auto"
+              >
+                Denní vystoupení <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+
+          {/* NOC text */}
+          <div
+            className="flex flex-col justify-end p-6 sm:p-10"
+            style={{
+              width: `${100 - dayReveal}%`,
+              transition: 'width 0.6s cubic-bezier(0.65, 0, 0.35, 1)',
+              opacity: 100 - dayReveal < 12 ? 0 : 1,
+            }}
+          >
+            <div className="max-w-md">
+              <div className="flex items-center gap-3 mb-4">
+                <Moon className="w-7 h-7 text-[#FFE9A8]" />
+                <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#FFE9A8]">Noc</span>
+              </div>
+
+              <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl text-white leading-[1.05] mb-4">
+                Ohnivá show<br />plná ohně
+              </h2>
+
+              <p className="text-sm sm:text-base text-[#B9C0D8] font-serif-body leading-relaxed mb-6">
+                Choreografická ohnivá show s poi, holemi, vějíři a fakírskými čísly.
+              </p>
+
+              <AnimatePresence>
+                {hovered === 'night' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    transition={{ duration: 0.3, delay: 0.15 }}
+                    className="space-y-3 mb-6"
+                  >
+                    {NIGHT_ITEMS.map((item) => (
+                      <div key={item.title} className="flex items-start gap-3 bg-white/10 backdrop-blur-sm border border-white/15 p-3 rounded-sm">
+                        <item.icon className="w-5 h-5 text-[#FFE9A8] mt-0.5 shrink-0" />
+                        <div>
+                          <h3 className="font-display font-bold text-sm uppercase tracking-wide text-white">{item.title}</h3>
+                          <p className="text-xs text-[#B9C0D8] font-serif-body leading-relaxed">{item.text}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <Link
+                to="/vystoupeni"
+                className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-white border-b-2 border-[#FFE9A8] pb-1 hover:gap-3 transition-all w-fit pointer-events-auto"
+              >
+                Noční vystoupení <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -264,13 +286,10 @@ export const HomePage: React.FC = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none">
           <motion.div
             className="relative"
-            animate={{
-              scale: hovered ? 0.82 : 1,
-              opacity: hovered ? 0.5 : 1,
-            }}
+            animate={{ scale: hovered ? 0.8 : 1, opacity: hovered ? 0.45 : 1 }}
             transition={{ duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }}
           >
-            <div className="absolute inset-0 bg-[#FAF6EE] rounded-full scale-[1.12] shadow-2xl border-2 border-[#1A1512] hidden md:block" />
+            <div className="absolute inset-0 bg-[#FAF6EE] rounded-full scale-[1.14] shadow-2xl border-2 border-[#1A1512] hidden md:block" />
             <LogoImg size={160} className="relative z-10 drop-shadow-2xl max-md:!h-[100px]" />
           </motion.div>
         </div>
