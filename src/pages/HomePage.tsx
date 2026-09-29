@@ -331,7 +331,7 @@ export const HomePage: React.FC = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none">
           <motion.div
             className="relative"
-            animate={{ scale: hovered ? 0.8 : 1, opacity: hovered ? 0.45 : 1 }}
+            animate={{ scale: hovered ? 0.8 : 1, opacity: hovered ? 0 : 1 }}
             transition={{ duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }}
           >
             <div className="absolute inset-0 bg-[#FAF6EE] rounded-full scale-[1.14] shadow-2xl border-2 border-[#1A1512] hidden md:block" />
