@@ -42,8 +42,10 @@ export const HomePage: React.FC = () => {
   const [hovered, setHovered] = useState<'day' | 'night' | null>(null);
 
   /* Odkrývání: obě vrstvy jsou přes celou obrazovku, clip-path odhaluje.
-     Pozadí se NEROZTAHUJE — jen se odkrývá/ukrývá. */
-  const dayReveal = hovered === 'night' ? 0 : hovered === 'day' ? 100 : 50;
+     Pozadí se NEROZTAHUJE — jen se odkrývá/ukrývá.
+     Druhá strana zůstává vidět jako úzký pruh (12 %), ať je vidět,
+     že je tam druhá možnost, a myš má kam se vrátit. */
+  const dayReveal = hovered === 'night' ? 12 : hovered === 'day' ? 88 : 50;
 
   return (
     <>
@@ -89,11 +91,11 @@ export const HomePage: React.FC = () => {
               }}
             />
           ))}
-          {/* Zářivé slunce */}
+          {/* Zářivé slunce — uvnitř viditelné části i při roztažení (88 %) */}
           <div
             style={{
               position: 'absolute',
-              top: '7%', right: '9%',
+              top: '7%', right: '16%',
               width: 110, height: 110,
               background: 'radial-gradient(circle, #FFF3C4 0%, #FFD24D 48%, transparent 72%)',
               borderRadius: '50%',
@@ -137,19 +139,19 @@ export const HomePage: React.FC = () => {
               filter: 'blur(40px)',
             }}
           />
-          {/* Měsíc */}
+          {/* Měsíc — uvnitř viditelné části i při roztažení noci (za 12 %) */}
           <div
             style={{
               position: 'absolute',
-              top: '9%', left: '10%',
+              top: '9%', left: '18%',
               width: 84, height: 84,
               background: 'radial-gradient(circle at 38% 36%, #FFFDF2 0%, #F0E9CE 48%, #C9C0A2 100%)',
               borderRadius: '50%',
               boxShadow: '0 0 60px 20px rgba(230,225,200,0.22), 0 0 140px 50px rgba(180,180,220,0.1)',
             }}
           />
-          <div className="absolute" style={{ top: '12%', left: '13%', width: 16, height: 13, background: 'rgba(185,178,150,0.35)', borderRadius: '50%' }} />
-          <div className="absolute" style={{ top: '15.5%', left: '18%', width: 9, height: 9, background: 'rgba(185,178,150,0.25)', borderRadius: '50%' }} />
+          <div className="absolute" style={{ top: '12%', left: '21%', width: 16, height: 13, background: 'rgba(185,178,150,0.35)', borderRadius: '50%' }} />
+          <div className="absolute" style={{ top: '15.5%', left: '26%', width: 9, height: 9, background: 'rgba(185,178,150,0.25)', borderRadius: '50%' }} />
           {/* Noční opar */}
           <div className="absolute bottom-0 left-0 right-0 h-1/3" style={{ background: 'linear-gradient(to top, rgba(10,6,22,0.65), transparent)' }} />
         </div>
@@ -179,7 +181,7 @@ export const HomePage: React.FC = () => {
             style={{
               width: `${dayReveal}%`,
               transition: 'width 0.6s cubic-bezier(0.65, 0, 0.35, 1)',
-              opacity: dayReveal < 12 ? 0 : 1,
+              opacity: dayReveal < 20 ? 0 : 1,
             }}
           >
             <div className="max-w-md">
@@ -233,7 +235,7 @@ export const HomePage: React.FC = () => {
             style={{
               width: `${100 - dayReveal}%`,
               transition: 'width 0.6s cubic-bezier(0.65, 0, 0.35, 1)',
-              opacity: 100 - dayReveal < 12 ? 0 : 1,
+              opacity: 100 - dayReveal < 20 ? 0 : 1,
             }}
           >
             <div className="max-w-md">
@@ -281,6 +283,49 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* ===== POPISK PRUHU: co je v tom úzkém pruhu ===== */}
+        <AnimatePresence>
+          {hovered && (
+            <motion.div
+              key={hovered}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+              className="absolute inset-y-0 z-20 flex flex-col items-center justify-center gap-3"
+              style={{
+                left: hovered === 'day' ? '0%' : '88%',
+                width: '12%',
+                pointerEvents: 'none',
+              }}
+            >
+              <div className="flex flex-col items-center gap-3" style={{ width: '100%' }}>
+                <div
+                  className="text-xs font-black uppercase tracking-[0.3em] whitespace-nowrap"
+                  style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                >
+                  {hovered === 'day' ? (
+                    <span className="text-[#FFE9A8]">Noc</span>
+                  ) : (
+                    <span className="text-[#D4760A]">Den</span>
+                  )}
+                </div>
+                <div className="w-px h-10" style={{ background: hovered === 'day' ? 'rgba(255,233,168,0.5)' : 'rgba(212,118,10,0.5)' }} />
+                <div
+                  className="text-xs font-bold uppercase tracking-[0.25em] whitespace-nowrap opacity-80 text-center"
+                  style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                >
+                  {hovered === 'day' ? (
+                    <span className="text-[#B9C0D8]">Ohnivá show</span>
+                  ) : (
+                    <span className="text-[#3A312A]">Žonglování</span>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ===== ERB UPROSTŘED ===== */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none">
