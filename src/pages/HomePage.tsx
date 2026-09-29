@@ -293,33 +293,33 @@ export const HomePage: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3, delay: 0.2 }}
-              className="absolute inset-y-0 z-20 flex flex-col items-center justify-center gap-3"
+              className="absolute inset-y-0 z-20 flex flex-col items-center justify-center gap-4"
               style={{
                 left: hovered === 'day' ? '0%' : '88%',
                 width: '12%',
                 pointerEvents: 'none',
               }}
             >
-              <div className="flex flex-col items-center gap-3" style={{ width: '100%' }}>
+              <div className="flex flex-col items-center gap-4" style={{ width: '100%' }}>
                 <div
-                  className="text-xs font-black uppercase tracking-[0.3em] whitespace-nowrap"
+                  className="text-sm font-black uppercase tracking-[0.25em] whitespace-nowrap"
                   style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                 >
                   {hovered === 'day' ? (
-                    <span className="text-[#FFE9A8]">Noc</span>
+                    <span className="text-[#FFE9A8] [text-shadow:0_1px_3px_rgba(0,0,0,0.6)]">Noc</span>
                   ) : (
-                    <span className="text-[#D4760A]">Den</span>
+                    <span className="text-[#B4530A] [text-shadow:0_1px_2px_rgba(255,255,255,0.5)]">Den</span>
                   )}
                 </div>
-                <div className="w-px h-10" style={{ background: hovered === 'day' ? 'rgba(255,233,168,0.5)' : 'rgba(212,118,10,0.5)' }} />
+                <div className="w-px h-12" style={{ background: hovered === 'day' ? 'rgba(255,233,168,0.6)' : 'rgba(180,83,10,0.5)' }} />
                 <div
-                  className="text-xs font-bold uppercase tracking-[0.25em] whitespace-nowrap opacity-80 text-center"
+                  className="text-sm font-bold uppercase tracking-[0.2em] whitespace-nowrap"
                   style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                 >
                   {hovered === 'day' ? (
-                    <span className="text-[#B9C0D8]">Ohnivá show</span>
+                    <span className="text-[#D6DCF0] [text-shadow:0_1px_3px_rgba(0,0,0,0.6)]">Ohnivá show</span>
                   ) : (
-                    <span className="text-[#3A312A]">Žonglování</span>
+                    <span className="text-[#2E2722] [text-shadow:0_1px_2px_rgba(255,255,255,0.45)]">Žonglování</span>
                   )}
                 </div>
               </div>
