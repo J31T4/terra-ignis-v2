@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { LogoImg } from '../components/LogoImg';
@@ -47,6 +47,16 @@ export const HomePage: React.FC = () => {
      že je tam druhá možnost, a myš má kam se vrátit. */
   const dayReveal = hovered === 'night' ? 12 : hovered === 'day' ? 88 : 50;
 
+  /* Nastaví data-theme na <html> pro přepnutí barev headeru atd. */
+  useEffect(() => {
+    const t = hovered === 'day' ? 'day' : hovered === 'night' ? 'night' : '';
+    if (t) {
+      document.documentElement.dataset.theme = t;
+    } else {
+      delete document.documentElement.dataset.theme;
+    }
+  }, [hovered]);
+
   return (
     <>
       <section className="relative overflow-hidden" style={{ minHeight: 'calc(100vh - 72px)' }}>
@@ -57,21 +67,19 @@ export const HomePage: React.FC = () => {
           style={{
             clipPath: `polygon(0% 0%, ${dayReveal}% 0%, ${dayReveal}% 100%, 0% 100%)`,
             transition: 'clip-path 0.6s cubic-bezier(0.65, 0, 0.35, 1)',
-            background: 'linear-gradient(170deg, #EAF4FF 0%, #DCEBFA 25%, #FDF0D5 60%, #FBDFA8 85%, #F7CE8C 100%)',
+            background: 'linear-gradient(170deg, #EAF4FF 0%, #E0EDFA 15%, #F0EDD8 35%, #FDF2DA 55%, #FBE8BC 75%, #F7CE8C 100%)',
           }}
         >
-          {/* Sluneční záře */}
+          {/* Sluneční záře — větší kontejner, ať nemá tvrdou hranu */}
           <div
-            className="absolute"
+            className="absolute inset-0"
             style={{
-              top: '-12%', right: '-8%',
-              width: '62%', height: '62%',
-              background: 'radial-gradient(circle, rgba(255,214,102,0.7) 0%, rgba(255,186,66,0.25) 45%, transparent 70%)',
+              background: 'radial-gradient(ellipse 70% 80% at 78% 8%, rgba(255,214,102,0.55) 0%, rgba(255,186,66,0.22) 35%, rgba(255,210,120,0.08) 60%, transparent 85%)',
             }}
           />
           {/* Paprsky */}
           <div
-            className="absolute opacity-[0.07]"
+            className="absolute opacity-[0.04]"
             style={{
               top: '-20%', right: '-20%', width: '110%', height: '110%',
               background: 'conic-gradient(from 200deg at 82% 12%, transparent 0deg, #E8A020 12deg, transparent 26deg, #E8A020 44deg, transparent 58deg, #E8A020 76deg, transparent 90deg, #E8A020 108deg, transparent 122deg, #E8A020 140deg, transparent 154deg, #E8A020 172deg, transparent 186deg, #E8A020 204deg, transparent 220deg)',
